@@ -30,21 +30,37 @@ namespace ChessApp
             Capture = capture;
             Piece = piece;
             EnPassant = enPassant;
+            Castles = false;
+            CastlesKingSide = false;
         }
-        public Move(Point from, Point to,Piece piece, Piece promotion, bool capture, bool enPassant)
+        public Move(Point from, Point to, Piece piece, Piece promotion, bool capture)
         {
             From = from;
             To = to;
             Promotion = promotion;
             Capture = capture;
             Piece = piece;
-            EnPassant = enPassant;
+            EnPassant = false;
+            Castles = false;
+            CastlesKingSide = false;
+        }
+        //castles
+        public Move(Point from, Point to,  bool castlesKingSide)
+        {
+            From = from;
+            To = to;
+            Promotion = Piece.NONE;
+            Capture = false;
+            Piece = Piece.KING;
+            EnPassant = false;
+            Castles = true;
+            CastlesKingSide = castlesKingSide;
         }
 
         //TODO: implement notation
-            //-> determine if check
-            //-> determine if checkmate/stalemate/...
-            //check for ambiguous moves
+        //-> determine if check
+        //-> determine if checkmate/stalemate/...
+        //check for ambiguous moves
 
         public Point From { get; }
         public Point To { get; }
@@ -52,8 +68,10 @@ namespace ChessApp
         public Piece Piece { get; }
         public bool Capture { get; }
         public bool EnPassant { get; }
+        public bool Castles { get; }
+        public bool CastlesKingSide { get; }
 
-        public override string ToString() => (Piece + " from: " + (char)(From.Y + 97) + (From.X +1) + " to: "+ (char)(To.Y + 97) + (To.X+1));
+        public override string ToString() => (Piece + " from: " + (char)(From.Y + 97) + (From.X + 1) + " to: " + (char)(To.Y + 97) + (To.X + 1) +(Promotion == Piece.NONE ? "": " Promotion: " + Promotion));
 
     }
     class Program
@@ -63,43 +81,16 @@ namespace ChessApp
         {
             Program P = new Program();
             P.chessBoard = new ChessBoard();
-            P.chessBoard.setupByFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
-            //P.chessBoard.setup();
+            P.chessBoard.setupByFEN("r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1");
             P.chessBoard.printAscii();
-            List<Move> moves = P.chessBoard.GetLegalMoves();
-            
-            Console.WriteLine("");
 
-            
-            foreach (Move i in moves)
+
+            List<Move> moves = P.chessBoard.GetLegalMoves();
+
+            foreach ( Move i in moves)
             {
                 Console.WriteLine(i);
             }
-
-            Console.WriteLine("");
-
-            Console.WriteLine(P.chessBoard.getBoardstate());
-            Move move = new Move(new Point(1, 5), new Point(2, 5), Piece.PAWN, false, false);
-            P.chessBoard.makeLegalMove(move);
-            P.chessBoard.printAscii();
-
-            Console.WriteLine(P.chessBoard.getBoardstate());
-
-            Console.WriteLine("");
-            move = new Move(new Point(6, 4), new Point(5, 4), Piece.PAWN, false, false);
-            P.chessBoard.makeLegalMove(move);
-            P.chessBoard.printAscii();
-
-            move = new Move(new Point(1, 6), new Point(3, 6), Piece.PAWN, false, false);
-            P.chessBoard.makeLegalMove(move);
-            P.chessBoard.printAscii();
-
-            Console.WriteLine("");
-            move = new Move(new Point(7, 3), new Point(3, 7), Piece.QUEEN, false, false);
-            P.chessBoard.makeLegalMove(move);
-            P.chessBoard.printAscii();
-
-            Console.WriteLine(P.chessBoard.getBoardstate());
         }
     }
 }
