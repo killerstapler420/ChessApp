@@ -41,6 +41,11 @@ namespace ChessApp
             EnPassant = enPassant;
         }
 
+        //TODO: implement notation
+            //-> determine if check
+            //-> determine if checkmate/stalemate/...
+            //check for ambiguous moves
+
         public Point From { get; }
         public Point To { get; }
         public Piece Promotion { get; }
@@ -58,16 +63,43 @@ namespace ChessApp
         {
             Program P = new Program();
             P.chessBoard = new ChessBoard();
-            P.chessBoard.setupByFEN("rnbqkbnr/ppppp1pp/8/8/8/8/PPPPPpPP/RNBQKBNR w KQkq - 0 1");
+            P.chessBoard.setupByFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
             //P.chessBoard.setup();
             P.chessBoard.printAscii();
-            List<Move> moves = P.chessBoard.GetLegalMovesOfColor(Color.WHITE);
+            List<Move> moves = P.chessBoard.GetLegalMoves();
             
+            Console.WriteLine("");
 
+            
             foreach (Move i in moves)
             {
                 Console.WriteLine(i);
             }
+
+            Console.WriteLine("");
+
+            Console.WriteLine(P.chessBoard.getBoardstate());
+            Move move = new Move(new Point(1, 5), new Point(2, 5), Piece.PAWN, false, false);
+            P.chessBoard.makeLegalMove(move);
+            P.chessBoard.printAscii();
+
+            Console.WriteLine(P.chessBoard.getBoardstate());
+
+            Console.WriteLine("");
+            move = new Move(new Point(6, 4), new Point(5, 4), Piece.PAWN, false, false);
+            P.chessBoard.makeLegalMove(move);
+            P.chessBoard.printAscii();
+
+            move = new Move(new Point(1, 6), new Point(3, 6), Piece.PAWN, false, false);
+            P.chessBoard.makeLegalMove(move);
+            P.chessBoard.printAscii();
+
+            Console.WriteLine("");
+            move = new Move(new Point(7, 3), new Point(3, 7), Piece.QUEEN, false, false);
+            P.chessBoard.makeLegalMove(move);
+            P.chessBoard.printAscii();
+
+            Console.WriteLine(P.chessBoard.getBoardstate());
         }
     }
 }

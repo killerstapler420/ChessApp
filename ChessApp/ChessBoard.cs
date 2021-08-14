@@ -10,7 +10,6 @@ namespace ChessApp
     {
         private Square[,] board;
         private Color toMove;
-        private bool inCheck;
         private bool wCanCastleKing;
         private bool wCanCastleQueen;
         private bool bCanCastleKing;
@@ -18,8 +17,15 @@ namespace ChessApp
         private int moveNumber;
         private int halfMoves; //important for 50 move rule
         private int ?enPassantColumn; //resets after every move.
-                                     //for white the en passant row will always be on the 6the row (for capturing) for black the 3th.
-                                     //TODO
+                                      //for white the en passant row will always be on the 6the row (for capturing) for black the 3th.
+                                      //TODO
+
+        //gamestate variables
+        List<Move> ?_legalMoves;
+        private bool inCheck;
+        private bool inCheckMate;
+        private bool inStaleMate;
+        private bool gameOver;
 
 
         public ChessBoard()
@@ -54,6 +60,8 @@ namespace ChessApp
             Console.WriteLine("En passant: " + enPassantColumn);
             Console.WriteLine("Halfmoves: " + halfMoves);
             Console.WriteLine("Current Movenumber: " + moveNumber);
+            Console.WriteLine("");
+            Console.WriteLine("To move: " + toMove);
         }
 
         public void placePiece()
@@ -172,7 +180,7 @@ namespace ChessApp
             for (int i = 0; i < 8; i++)
             {
 
-                Console.WriteLine("");
+                //Console.WriteLine("");
                 int column = 0;
                 foreach (char c in _pieces[i])
                 {
@@ -714,10 +722,10 @@ namespace ChessApp
             switch (board[row, column].GetPiece())
             {
                 case Piece.NONE:
-                    Console.WriteLine("None");
+                    //Console.WriteLine("None");
                     break;
                 case Piece.KING:
-                    Console.WriteLine("King");
+                    //Console.WriteLine("King");
 
                     for (int i = row - 1; i < row + 2; i++)
                     {
@@ -737,22 +745,22 @@ namespace ChessApp
 
                     break;
                 case Piece.QUEEN:
-                    Console.WriteLine("Queen");
+                    //Console.WriteLine("Queen");
                     //left-down...I think
                     for (int i = 1; row - i > -1 && column - i > -1; i++)
                     {
                         if (board[row - i, column - i].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             if (board[row - i, column - i].GetColor() == color)
                             {
-                                Console.WriteLine("Blocked");
+                                //Console.WriteLine("Blocked");
                             }
                             else
                             {
                                 moves.Add(new Point(row - i, column - i));
-                                Console.WriteLine("Capture");
+                                //Console.WriteLine("Capture");
                             }
 
                             break;
@@ -765,17 +773,17 @@ namespace ChessApp
                     {
                         if (board[row + i, column - i].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             if (board[row + i, column - i].GetColor() == color)
                             {
-                                Console.WriteLine("Blocked");
+                                // Console.WriteLine("Blocked");
                             }
                             else
                             {
 
                                 moves.Add(new Point(row + i, column - i));
-                                Console.WriteLine("Capture");
+                                // Console.WriteLine("Capture");
                             }
 
                             break;
@@ -788,17 +796,17 @@ namespace ChessApp
                     {
                         if (board[row - i, column + i].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             if (board[row - i, column + i].GetColor() == color)
                             {
-                                Console.WriteLine("Blocked");
+                                // Console.WriteLine("Blocked");
                             }
                             else
                             {
 
                                 moves.Add(new Point(row - i, column + i));
-                                Console.WriteLine("Capture");
+                                //Console.WriteLine("Capture");
                             }
 
                             break;
@@ -811,17 +819,17 @@ namespace ChessApp
                     {
                         if (board[row + i, column + i].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             if (board[row + i, column + i].GetColor() == color)
                             {
-                                Console.WriteLine("Blocked");
+                                //Console.WriteLine("Blocked");
                             }
                             else
                             {
 
                                 moves.Add(new Point(row + i, column + i));
-                                Console.WriteLine("Capture");
+                                //Console.WriteLine("Capture");
                             }
 
                             break;
@@ -835,16 +843,16 @@ namespace ChessApp
                     {
                         if (board[i, column].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             if (board[i, column].GetColor() == color)
                             {
-                                Console.WriteLine("Blocked");
+                                //Console.WriteLine("Blocked");
                             }
                             else
                             {
                                 moves.Add(new Point(i, column));
-                                Console.WriteLine("Capture");
+                                //Console.WriteLine("Capture");
                             }
 
                             break;
@@ -856,16 +864,16 @@ namespace ChessApp
                     {
                         if (board[i, column].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             if (board[i, column].GetColor() == color)
                             {
-                                Console.WriteLine("Blocked");
+                                //Console.WriteLine("Blocked");
                             }
                             else
                             {
                                 moves.Add(new Point(i, column));
-                                Console.WriteLine("Capture");
+                                //Console.WriteLine("Capture");
                             }
 
                             break;
@@ -880,16 +888,16 @@ namespace ChessApp
                     {
                         if (board[row, j].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             if (board[row, j].GetColor() == color)
                             {
-                                Console.WriteLine("Blocked");
+                                //Console.WriteLine("Blocked");
                             }
                             else
                             {
                                 moves.Add(new Point(row, j));
-                                Console.WriteLine("Capture");
+                                //Console.WriteLine("Capture");
                             }
 
                             break;
@@ -902,16 +910,16 @@ namespace ChessApp
                     {
                         if (board[row, j].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             if (board[row, j].GetColor() == color)
                             {
-                                Console.WriteLine("Blocked");
+                                //Console.WriteLine("Blocked");
                             }
                             else
                             {
                                 moves.Add(new Point(row, j));
-                                Console.WriteLine("Capture");
+                                //Console.WriteLine("Capture");
                             }
 
                             break;
@@ -921,22 +929,22 @@ namespace ChessApp
                     }
                     break;
                 case Piece.BISHOP:
-                    Console.WriteLine("Bishop");
+                    //Console.WriteLine("Bishop");
                     //left-down...I think
                     for (int i = 1; row - i > -1 && column - i > -1; i++)
                     {
                         if (board[row - i, column - i].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             if (board[row - i, column - i].GetColor() == color)
                             {
-                                Console.WriteLine("Blocked");
+                                //Console.WriteLine("Blocked");
                             }
                             else
                             {
                                 moves.Add(new Point(row - i, column - i));
-                                Console.WriteLine("Capture");
+                                //Console.WriteLine("Capture");
                             }
 
                             break;
@@ -949,17 +957,17 @@ namespace ChessApp
                     {
                         if (board[row + i, column - i].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             if (board[row + i, column - i].GetColor() == color)
                             {
-                                Console.WriteLine("Blocked");
+                                //Console.WriteLine("Blocked");
                             }
                             else
                             {
 
                                 moves.Add(new Point(row + i, column - i));
-                                Console.WriteLine("Capture");
+                                //Console.WriteLine("Capture");
                             }
 
                             break;
@@ -972,17 +980,17 @@ namespace ChessApp
                     {
                         if (board[row - i, column + i].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             if (board[row - i, column + i].GetColor() == color)
                             {
-                                Console.WriteLine("Blocked");
+                                //Console.WriteLine("Blocked");
                             }
                             else
                             {
 
                                 moves.Add(new Point(row - i, column + i));
-                                Console.WriteLine("Capture");
+                                //Console.WriteLine("Capture");
                             }
 
                             break;
@@ -995,17 +1003,17 @@ namespace ChessApp
                     {
                         if (board[row + i, column + i].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             if (board[row + i, column + i].GetColor() == color)
                             {
-                                Console.WriteLine("Blocked");
+                                //Console.WriteLine("Blocked");
                             }
                             else
                             {
 
                                 moves.Add(new Point(row + i, column + i));
-                                Console.WriteLine("Capture");
+                                //Console.WriteLine("Capture");
                             }
 
                             break;
@@ -1016,7 +1024,7 @@ namespace ChessApp
 
                     break;
                 case Piece.KNIGTH:
-                    Console.WriteLine("Knigth");
+                    //Console.WriteLine("Knigth");
                     int[,] jumps =
                     {
                         { row + 1, column + 2 },
@@ -1046,23 +1054,23 @@ namespace ChessApp
                     }
                     break;
                 case Piece.ROOK:
-                    Console.WriteLine("Rook");
+                    //Console.WriteLine("Rook");
                     //I did it in 2 times per row/column because of how I'm going to implement blocking/capturing pieces... I think :/
                     //rows
                     for (int i = row - 1; i > -1; i--)
                     {
                         if (board[i, column].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             if (board[i, column].GetColor() == color)
                             {
-                                Console.WriteLine("Blocked");
+                                //Console.WriteLine("Blocked");
                             }
                             else
                             {
                                 moves.Add(new Point(i, column));
-                                Console.WriteLine("Capture");
+                                //Console.WriteLine("Capture");
                             }
 
                             break;
@@ -1074,16 +1082,16 @@ namespace ChessApp
                     {
                         if (board[i, column].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             if (board[i, column].GetColor() == color)
                             {
-                                Console.WriteLine("Blocked");
+                                // Console.WriteLine("Blocked");
                             }
                             else
                             {
                                 moves.Add(new Point(i, column));
-                                Console.WriteLine("Capture");
+                                //Console.WriteLine("Capture");
                             }
 
                             break;
@@ -1098,16 +1106,16 @@ namespace ChessApp
                     {
                         if (board[row, j].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             if (board[row, j].GetColor() == color)
                             {
-                                Console.WriteLine("Blocked");
+                                //Console.WriteLine("Blocked");
                             }
                             else
                             {
                                 moves.Add(new Point(row, j));
-                                Console.WriteLine("Capture");
+                                //Console.WriteLine("Capture");
                             }
 
                             break;
@@ -1120,16 +1128,16 @@ namespace ChessApp
                     {
                         if (board[row, j].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             if (board[row, j].GetColor() == color)
                             {
-                                Console.WriteLine("Blocked");
+                                //Console.WriteLine("Blocked");
                             }
                             else
                             {
                                 moves.Add(new Point(row, j));
-                                Console.WriteLine("Capture");
+                                //Console.WriteLine("Capture");
                             }
 
                             break;
@@ -1139,12 +1147,12 @@ namespace ChessApp
                     }
                     break;
                 case Piece.PAWN:
-                    Console.WriteLine("Pawn");
+                    //Console.WriteLine("Pawn");
 
                     //TODO: en passant
                     //TODO: promotion
 
-                    if(color == Color.WHITE)
+                    if (color == Color.WHITE)
                     {
                         if(board[row+1, column].GetColor() == Color.NONE)
                         {
@@ -1159,7 +1167,7 @@ namespace ChessApp
                             if (board[row + 1, column +1].GetColor() == Color.BLACK) //We already know our color is white
                             {
                                 moves.Add(new Point(row + 1, column +1));
-                                Console.WriteLine("Capture");
+                                //Console.WriteLine("Capture");
                             }
                         }
                         if (column -1> -1)
@@ -1167,7 +1175,7 @@ namespace ChessApp
                             if (board[row + 1, column - 1].GetColor() == Color.BLACK) //We already know our color is white
                             {
                                 moves.Add(new Point(row + 1, column - 1));
-                                Console.WriteLine("Capture");
+                                //Console.WriteLine("Capture");
                             }
                         }
                     }
@@ -1186,7 +1194,7 @@ namespace ChessApp
                             if (board[row - 1, column + 1].GetColor() == Color.WHITE) //We already know our color is black
                             {
                                 moves.Add(new Point(row - 1, column + 1));
-                                Console.WriteLine("Capture");
+                                //Console.WriteLine("Capture");
                             }
                         }
                         if (column - 1 > -1)
@@ -1194,7 +1202,7 @@ namespace ChessApp
                             if (board[row - 1, column - 1].GetColor() == Color.WHITE) //We already know our color is black
                             {
                                 moves.Add(new Point(row - 1, column - 1));
-                                Console.WriteLine("Capture");
+                                //Console.WriteLine("Capture");
                             }
                         }
                     }
@@ -1215,10 +1223,10 @@ namespace ChessApp
             switch (board[row, column].GetPiece())
             {
                 case Piece.NONE:
-                    Console.WriteLine("None");
+                    //Console.WriteLine("None");
                     break;
                 case Piece.KING:
-                    Console.WriteLine("King");
+                    //Console.WriteLine("King");
 
                     for (int i = row - 1; i < row + 2; i++)
                     {
@@ -1233,13 +1241,13 @@ namespace ChessApp
 
                     break;
                 case Piece.QUEEN:
-                    Console.WriteLine("Queen");
+                    //Console.WriteLine("Queen");
                     //left-down...I think
                     for (int i = 1; row - i > -1 && column - i > -1; i++)
                     {
                         if (board[row - i, column - i].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             moves.Add(new Point(row - i, column - i));
 
@@ -1253,7 +1261,7 @@ namespace ChessApp
                     {
                         if (board[row + i, column - i].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             moves.Add(new Point(row + i, column - i));
 
@@ -1267,7 +1275,7 @@ namespace ChessApp
                     {
                         if (board[row - i, column + i].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             moves.Add(new Point(row - i, column + i));
 
@@ -1281,7 +1289,7 @@ namespace ChessApp
                     {
                         if (board[row + i, column + i].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             moves.Add(new Point(row + i, column + i));
 
@@ -1296,7 +1304,7 @@ namespace ChessApp
                     {
                         if (board[i, column].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             moves.Add(new Point(i, column));
 
@@ -1309,7 +1317,7 @@ namespace ChessApp
                     {
                         if (board[i, column].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             moves.Add(new Point(i, column));
 
@@ -1325,7 +1333,7 @@ namespace ChessApp
                     {
                         if (board[row, j].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             moves.Add(new Point(row, j));
 
@@ -1339,7 +1347,7 @@ namespace ChessApp
                     {
                         if (board[row, j].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             moves.Add(new Point(row, j));
 
@@ -1350,13 +1358,13 @@ namespace ChessApp
                     }
                     break;
                 case Piece.BISHOP:
-                    Console.WriteLine("Bishop");
+                    //Console.WriteLine("Bishop");
                     //left-down...I think
                     for (int i = 1; row - i > -1 && column - i > -1; i++)
                     {
                         if (board[row - i, column - i].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             moves.Add(new Point(row - i, column - i));
 
@@ -1370,7 +1378,7 @@ namespace ChessApp
                     {
                         if (board[row + i, column - i].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             moves.Add(new Point(row + i, column - i));
 
@@ -1384,7 +1392,7 @@ namespace ChessApp
                     {
                         if (board[row - i, column + i].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             moves.Add(new Point(row - i, column + i));
 
@@ -1398,7 +1406,7 @@ namespace ChessApp
                     {
                         if (board[row + i, column + i].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             moves.Add(new Point(row + i, column + i));
 
@@ -1410,7 +1418,7 @@ namespace ChessApp
 
                     break;
                 case Piece.KNIGTH:
-                    Console.WriteLine("Knigth");
+                    //Console.WriteLine("Knigth");
                     int[,] jumps =
                     {
                         { row + 1, column + 2 },
@@ -1439,14 +1447,14 @@ namespace ChessApp
                     }
                     break;
                 case Piece.ROOK:
-                    Console.WriteLine("Rook");
+                    //Console.WriteLine("Rook");
                     //I did it in 2 times per row/column because of how I'm going to implement blocking/capturing pieces... I think :/
                     //rows
                     for (int i = row - 1; i > -1; i--)
                     {
                         if (board[i, column].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             moves.Add(new Point(i, column));
 
@@ -1459,7 +1467,7 @@ namespace ChessApp
                     {
                         if (board[i, column].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
 
                             moves.Add(new Point(i, column));
 
@@ -1475,7 +1483,7 @@ namespace ChessApp
                     {
                         if (board[row, j].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
                             moves.Add(new Point(row, j));
 
                             break;
@@ -1487,7 +1495,7 @@ namespace ChessApp
                     {
                         if (board[row, j].GetColor() != Color.NONE)
                         {
-                            Console.WriteLine("Piece in the way");
+                            //Console.WriteLine("Piece in the way");
                             moves.Add(new Point(row, j));
 
                             break;
@@ -1497,7 +1505,7 @@ namespace ChessApp
                     }
                     break;
                 case Piece.PAWN:
-                    Console.WriteLine("Pawn");
+                    //Console.WriteLine("Pawn");
 
                     if (color == Color.WHITE)
                     {
@@ -1607,17 +1615,18 @@ namespace ChessApp
             }
         }
 
-        public List<Move> GetLegalMovesOfColor(Color color)
+        public List<Move> GetLegalMoves()
         {
-            List<Move> moves = new List<Move>();
-            Color oppositeColor = Color.WHITE;
-            if (color == Color.WHITE)
+            if(_legalMoves != null)
             {
-                oppositeColor = Color.BLACK;
+                //Console.WriteLine("legal moves already initialised!");
+                return _legalMoves;
             }
+            List<Move> moves = new List<Move>();
+            
             foreach (Square i in board)
             {
-                if (i.GetColor() == color)
+                if (i.GetColor() == toMove)
                 {
                     List<Point> pseudos = getPseudoLegalMovesOfSquare(i.row, i.column);
                     //implement check if move is valid here.
@@ -1625,13 +1634,14 @@ namespace ChessApp
                     {
                         ChessBoard clone = Clone();
                         clone.MakeRawMove(i.row, i.column, co.X, co.Y);
-                        if (!clone.isInCeck(color))
+                        if (!clone.isInCeck(toMove))
                         {
                             moves.Add(new Move(new Point(i.row, i.column),co, i.GetPiece(),false,false));
                         }
                     }
                 }
             }
+            _legalMoves = moves;
             return moves;
         }
 
@@ -1639,11 +1649,64 @@ namespace ChessApp
 
         public void MakeRawMove(int fromRow, int fromCol, int toRow, int toCol)
         {
+            Color oppositeColor = Color.WHITE;
+            if(toMove == Color.WHITE)
+            {
+                oppositeColor = Color.BLACK;
+            }
             Piece piece = board[fromRow, fromCol].GetPiece();
             Color color = board[fromRow, fromCol].GetColor();
 
             board[fromRow, fromCol].setPiece(Piece.NONE, Color.NONE);
             board[toRow, toCol].setPiece(piece, color);
+            toMove = oppositeColor;
+            enPassantColumn = null; //to be implemented
+            halfMoves++;
+            if(toMove == Color.WHITE)
+            {
+                moveNumber++;
+            }
+            _legalMoves = null;
+        }
+
+        public string getBoardstate()
+        {
+            inCheck = isInCeck(toMove);
+            _legalMoves = GetLegalMoves();
+            if(_legalMoves.Count != 0)
+            {
+                return "Playing";
+            }
+            else
+            {
+                gameOver = true;
+                if (inCheck)
+                {
+                    inCheckMate = true;
+                    return "checkmate";
+                }
+                else
+                {
+                    inStaleMate = true;
+                    return "stalemate";
+                }
+            }
+        }
+
+        public void makeLegalMove(Move move)
+        {
+            GetLegalMoves();
+            if (_legalMoves.Contains(move))
+            {
+                Console.WriteLine("okidoki");
+                MakeRawMove(move.From.X, move.From.Y, move.To.X, move.To.Y);
+
+                getBoardstate();
+            }
+            else
+            {
+                Console.WriteLine("nope, illigal mate");
+            }
         }
     }
 }

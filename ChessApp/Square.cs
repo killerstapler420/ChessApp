@@ -28,7 +28,6 @@ namespace ChessApp
             {
                 case Piece.NONE:
                     return null;
-                    break;
                 case Piece.KING:
                     a = "k";
                     break;
