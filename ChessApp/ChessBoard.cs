@@ -64,10 +64,6 @@ namespace ChessApp
             Console.WriteLine("To move: " + toMove);
         }
 
-        public void placePiece()
-        {
-            board[5, 5].setPiece(Piece.KNIGTH, Color.WHITE);
-        }
         public ChessBoard Clone()
         {
             ChessBoard chessboard = new ChessBoard();
@@ -1154,55 +1150,68 @@ namespace ChessApp
 
                     if (color == Color.WHITE)
                     {
-                        if(board[row+1, column].GetColor() == Color.NONE)
+                        //TODO: place checks to stay in bounds
+                        if (row + 1 < 8)
                         {
-                            moves.Add(new Point(row +1, column));
-                            if (board[row + 2, column].GetColor() == Color.NONE && row == 1)
+                            if (board[row + 1, column].GetColor() == Color.NONE)
                             {
-                                moves.Add(new Point(row + 2, column));
+                                moves.Add(new Point(row + 1, column));
+                                if (row == 1)
+                                {
+                                    if (board[row + 2, column].GetColor() == Color.NONE)
+                                    {
+                                        moves.Add(new Point(row + 2, column));
+                                    }
+                                }
                             }
-                        }
-                        if(column + 1 < 8)
-                        {
-                            if (board[row + 1, column +1].GetColor() == Color.BLACK) //We already know our color is white
+                            if (column + 1 < 8)
                             {
-                                moves.Add(new Point(row + 1, column +1));
-                                //Console.WriteLine("Capture");
+                                if (board[row + 1, column + 1].GetColor() == Color.BLACK) //We already know our color is white
+                                {
+                                    moves.Add(new Point(row + 1, column + 1));
+                                    //Console.WriteLine("Capture");
+                                }
                             }
-                        }
-                        if (column -1> -1)
-                        {
-                            if (board[row + 1, column - 1].GetColor() == Color.BLACK) //We already know our color is white
+                            if (column - 1 > -1)
                             {
-                                moves.Add(new Point(row + 1, column - 1));
-                                //Console.WriteLine("Capture");
+                                if (board[row + 1, column - 1].GetColor() == Color.BLACK) //We already know our color is white
+                                {
+                                    moves.Add(new Point(row + 1, column - 1));
+                                    //Console.WriteLine("Capture");
+                                }
                             }
                         }
                     }
                     if (color == Color.BLACK)
                     {
-                        if (board[row - 1, column].GetColor() == Color.NONE)
+                        if (row - 1 > -1)
                         {
-                            moves.Add(new Point(row - 1, column));
-                            if (board[row - 2, column].GetColor() == Color.NONE && row == 6)
+                            if (board[row - 1, column].GetColor() == Color.NONE)
                             {
-                                moves.Add(new Point(row - 2, column));
+                                moves.Add(new Point(row - 1, column));
+                                if (row == 6)
+                                {
+                                    if (board[row - 2, column].GetColor() == Color.NONE)
+                                    {
+                                        moves.Add(new Point(row - 2, column));
+                                    }
+                                }
                             }
-                        }
-                        if (column + 1 < 8)
-                        {
-                            if (board[row - 1, column + 1].GetColor() == Color.WHITE) //We already know our color is black
+                            if (column + 1 < 8)
                             {
-                                moves.Add(new Point(row - 1, column + 1));
-                                //Console.WriteLine("Capture");
+                                if (board[row - 1, column + 1].GetColor() == Color.WHITE) //We already know our color is black
+                                {
+                                    moves.Add(new Point(row - 1, column + 1));
+                                    //Console.WriteLine("Capture");
+                                }
                             }
-                        }
-                        if (column - 1 > -1)
-                        {
-                            if (board[row - 1, column - 1].GetColor() == Color.WHITE) //We already know our color is black
+                            if (column - 1 > -1)
                             {
-                                moves.Add(new Point(row - 1, column - 1));
-                                //Console.WriteLine("Capture");
+                                if (board[row - 1, column - 1].GetColor() == Color.WHITE) //We already know our color is black
+                                {
+                                    moves.Add(new Point(row - 1, column - 1));
+                                    //Console.WriteLine("Capture");
+                                }
                             }
                         }
                     }
@@ -1629,24 +1638,133 @@ namespace ChessApp
                 if (i.GetColor() == toMove)
                 {
                     List<Point> pseudos = getPseudoLegalMovesOfSquare(i.row, i.column);
+                    int promotionRow = 7;
+                    if(toMove == Color.BLACK)
+                    {
+                        promotionRow = 0;
+                    }
+                    //check for castling
+
                     //implement check if move is valid here.
                     foreach (Point co in pseudos)
                     {
                         ChessBoard clone = Clone();
-                        clone.MakeRawMove(i.row, i.column, co.X, co.Y);
+                        bool capture = false;
+                        if(board[co.X, co.Y].GetPiece() != Piece.NONE) {
+                            //there is a piece on this square and we know its not ours because we checked for that already
+                            capture = true;
+                        }
+                        //check for promotion
+                        if(i.GetPiece() == Piece.PAWN && co.X == promotionRow)
+                        {
+                            clone.MakeRawMove(i.row, i.column, co.X, co.Y);
+                            if (!clone.isInCeck(toMove))
+                            {
+                                moves.Add(new Move(new Point(i.row, i.column), co, i.GetPiece(), Piece.ROOK,capture));
+                                moves.Add(new Move(new Point(i.row, i.column), co, i.GetPiece(), Piece.BISHOP, capture));
+                                moves.Add(new Move(new Point(i.row, i.column), co, i.GetPiece(), Piece.KNIGTH, capture));
+                                moves.Add(new Move(new Point(i.row, i.column), co, i.GetPiece(), Piece.QUEEN, capture));
+                            }
+                        }
+                        else
+                        {
+                            clone.MakeRawMove(i.row, i.column, co.X, co.Y);
+                            if (!clone.isInCeck(toMove))
+                            {
+                                moves.Add(new Move(new Point(i.row, i.column), co, i.GetPiece(), capture, false));
+                            }
+                        }
+                        
+
+                        
+                    }
+
+                    //check for en passants
+                    List<Move> possibleEnPassants = getPossibleEnPassants();
+                    foreach (Move move in possibleEnPassants)
+                    {
+                        ChessBoard clone = Clone();
+                        clone.doEnPassant(move);
                         if (!clone.isInCeck(toMove))
                         {
-                            moves.Add(new Move(new Point(i.row, i.column),co, i.GetPiece(),false,false));
+                            moves.Add(move);
                         }
+                        //make raw en passant
                     }
+
+                    
                 }
             }
+            List<Move> castles = getPossibleCastles(); //castles already does checks for checks
+            moves.AddRange(castles);
             _legalMoves = moves;
             return moves;
         }
 
+        public void doEnPassant(Move move)
+        {
+            Piece piece = move.Piece; //technically not necessary but could be fun for variants or smtn
+            
+
+            board[move.From.X, move.From.Y].setPiece(Piece.NONE, Color.NONE);
+            board[move.To.X, move.To.Y].setPiece(piece, toMove);
+
+            //en passant square
+            if (toMove == Color.WHITE)
+            {
+                board[move.To.X-1, move.To.Y].setPiece(Piece.NONE, Color.NONE);
+            }
+            else
+            {
+                board[move.To.X+1, move.To.Y].setPiece(Piece.NONE, Color.NONE);
+            }
+        }
+        public void doPromotion(Move move)
+        {
 
 
+            board[move.From.X, move.From.Y].setPiece(Piece.NONE, Color.NONE);
+            board[move.To.X, move.To.Y].setPiece(move.Promotion, toMove);
+
+            
+        }
+        public void doCastles(Move move)
+        {
+            if(toMove == Color.WHITE)
+            {
+                if (move.CastlesKingSide)
+                {
+                    board[0, 4].setPiece(Piece.NONE, Color.NONE);
+                    board[0, 5].setPiece(Piece.ROOK, Color.WHITE);
+                    board[0, 6].setPiece(Piece.KING, Color.WHITE);
+                    board[0, 7].setPiece(Piece.NONE, Color.NONE);
+                }
+                else
+                {
+                    board[0, 4].setPiece(Piece.NONE, Color.NONE);
+                    board[0, 3].setPiece(Piece.ROOK, Color.WHITE);
+                    board[0, 2].setPiece(Piece.KING, Color.WHITE);
+                    board[0, 0].setPiece(Piece.NONE, Color.NONE);
+                }
+            }
+            else
+            {
+                if (move.CastlesKingSide)
+                {
+                    board[7, 4].setPiece(Piece.NONE, Color.NONE);
+                    board[7, 5].setPiece(Piece.ROOK, Color.BLACK);
+                    board[7, 6].setPiece(Piece.KING, Color.BLACK);
+                    board[7, 7].setPiece(Piece.NONE, Color.NONE);
+                }
+                else
+                {
+                    board[7, 4].setPiece(Piece.NONE, Color.NONE);
+                    board[7, 3].setPiece(Piece.ROOK, Color.BLACK);
+                    board[7, 2].setPiece(Piece.KING, Color.BLACK);
+                    board[7, 0].setPiece(Piece.NONE, Color.NONE);
+                }
+            }
+        }
         public void MakeRawMove(int fromRow, int fromCol, int toRow, int toCol)
         {
             Color oppositeColor = Color.WHITE;
@@ -1659,14 +1777,6 @@ namespace ChessApp
 
             board[fromRow, fromCol].setPiece(Piece.NONE, Color.NONE);
             board[toRow, toCol].setPiece(piece, color);
-            toMove = oppositeColor;
-            enPassantColumn = null; //to be implemented
-            halfMoves++;
-            if(toMove == Color.WHITE)
-            {
-                moveNumber++;
-            }
-            _legalMoves = null;
         }
 
         public string getBoardstate()
@@ -1675,7 +1785,14 @@ namespace ChessApp
             _legalMoves = GetLegalMoves();
             if(_legalMoves.Count != 0)
             {
+                if (halfMoves > 99) {
+                    gameOver = true;
+                    return "50 move rule";
+                    
+                }
+
                 return "Playing";
+                
             }
             else
             {
@@ -1693,20 +1810,230 @@ namespace ChessApp
             }
         }
 
-        public void makeLegalMove(Move move)
+        public bool makeLegalMove(Move move)
         {
             GetLegalMoves();
+            Console.WriteLine(move);
             if (_legalMoves.Contains(move))
             {
+                Color oppositeColor = Color.WHITE;
+                if (toMove == Color.WHITE)
+                {
+                    oppositeColor = Color.BLACK;
+                }
                 Console.WriteLine("okidoki");
-                MakeRawMove(move.From.X, move.From.Y, move.To.X, move.To.Y);
+                if (move.EnPassant)
+                {
+                    doEnPassant(move);
+                }
+                else
+                {
+                    if (move.Promotion != Piece.NONE)
+                    {
+                        //promotion
+                        doPromotion(move);
+                    }
+                    else
+                    {
+                        if (move.Castles) {
+                            //castle
+                            doCastles(move);
+                        }
+                        else {
 
+                            MakeRawMove(move.From.X, move.From.Y, move.To.X, move.To.Y);
+                        }
+                    }
+                }
+                
+
+                //set board variables
+                toMove = oppositeColor;
+                enPassantColumn = null;
+                
+                if (toMove == Color.WHITE)
+                {
+                    moveNumber++;
+                }
+
+                if(move.Piece == Piece.PAWN | move.Capture ) //TODO: castles or losing of castling rigths needs to change this too
+                {
+                    halfMoves = 0;
+                }
+                else
+                {
+                    halfMoves++;
+                }
+                _legalMoves = null;
                 getBoardstate();
+                return true;
             }
             else
             {
                 Console.WriteLine("nope, illigal mate");
+                return false;
             }
+        }
+
+        public bool isGameOver()
+        {
+            return gameOver;
+        }
+
+        public List<Move> getPossibleEnPassants()
+        {
+            List<Move> moves = new List<Move>();
+            int enPassantRow = 3; //row where we look for a pawn of the playing color
+            int direction = -1; //the direction the pawn will go, black goes -1 white goes +1
+            if (enPassantColumn == null)
+            {
+                return moves;
+            }
+            if (toMove == Color.WHITE)
+            {
+                enPassantRow = 4;
+                direction = 1;
+            }
+            int v = enPassantColumn ?? default(int); //int? to int cast
+            if (enPassantColumn - 1 > -1)
+            {
+                
+                if (board[enPassantRow, v-1].GetPiece() == Piece.PAWN
+                        && board[enPassantRow, v-1].GetColor() == toMove)
+                {
+                    moves.Add(new Move(new Point(enPassantRow, v - 1), new Point(enPassantRow + direction, v), Piece.PAWN, true, true));
+                }
+            }
+            if (enPassantColumn + 1 < 8)
+            {
+                if (board[enPassantRow, v +1].GetPiece() == Piece.PAWN
+                        && board[enPassantRow, v-1].GetColor() == toMove)
+                {
+                    moves.Add(new Move(new Point(enPassantRow, v + 1), new Point(enPassantRow + direction, v), Piece.PAWN, true, true));
+                }
+            }
+
+
+
+
+
+            return moves;
+        }
+
+
+        public List<Move> getPossibleCastles()
+        {
+            //this is defined for normal board setups, won't work in chess960
+            List<Move> moves = new List<Move>();
+            if (isInCeck(toMove))
+            {
+                return moves; //don't waste energy
+            }
+            if (toMove == Color.WHITE)
+            {
+
+                if (!wCanCastleKing && !wCanCastleQueen)
+                {
+                    return moves; //don't waste energy
+                }
+                HashSet<Point> attacks = getattackOfColor(Color.BLACK);
+                if (wCanCastleKing)
+                {
+                    //check if squares beside are not attacked
+
+                    Point a = new Point(0, 5);
+                    Point b = new Point(0, 6);
+                    if (attacks.TryGetValue(a, out a) | attacks.TryGetValue(b, out b))
+                    {
+                        //can't castle
+
+                    }
+                    else
+                    {
+                        if (board[0, 5].GetPiece() == Piece.NONE && board[0, 6].GetPiece() == Piece.NONE)
+                        {
+                            //can castle
+                            moves.Add(new Move(new Point(0, 4), new Point(0,6), true));
+                            Console.WriteLine("kingside jup");
+                        }
+                    }
+                }
+                if (wCanCastleQueen)
+                {
+                    //check if squares beside are not attacked
+
+                    Point a = new Point(0, 3);
+                    Point b = new Point(0, 2);
+                    if (attacks.TryGetValue(a, out a) | attacks.TryGetValue(b, out b))
+                    {
+                        //can't castle
+                        
+                    }
+                    else
+                    {
+                        if (board[0, 3].GetPiece() == Piece.NONE && board[0, 2].GetPiece() == Piece.NONE && board[0, 1].GetPiece() == Piece.NONE)
+                        {
+                            //can castle
+                            moves.Add(new Move(new Point(0, 4), new Point(0, 2), false));
+                            Console.WriteLine("queenside jup");
+                        }
+                    }
+                }
+            }
+            //check for black
+            if (toMove == Color.BLACK)
+            {
+
+                if (!bCanCastleKing && !bCanCastleQueen)
+                {
+                    return moves; //don't waste energy
+                }
+                HashSet<Point> attacks = getattackOfColor(Color.WHITE);
+                if (bCanCastleKing)
+                {
+                    //check if squares beside are not attacked
+
+                    Point a = new Point(7, 5);
+                    Point b = new Point(7, 6);
+                    if (attacks.TryGetValue(a, out a) | attacks.TryGetValue(b, out b))
+                    {
+                        //can't castle
+
+                    }
+                    else
+                    {
+                        if (board[7, 5].GetPiece() == Piece.NONE && board[7, 6].GetPiece() == Piece.NONE)
+                        {
+                            //can castle
+                            Console.WriteLine("black kingside jup");
+                            moves.Add(new Move(new Point(7, 4), new Point(7,6), true));
+                        }
+                    }
+                }
+                if (bCanCastleQueen)
+                {
+                    //check if squares beside are not attacked
+
+                    Point a = new Point(7, 3);
+                    Point b = new Point(7, 2);
+                    if (attacks.TryGetValue(a, out a) | attacks.TryGetValue(b, out b))
+                    {
+                        //can't castle
+
+                    }
+                    else
+                    {
+                        if (board[7, 3].GetPiece() == Piece.NONE && board[7, 2].GetPiece() == Piece.NONE && board[7, 1].GetPiece() == Piece.NONE)
+                        {
+                            //can castle
+                            moves.Add(new Move(new Point(7, 4), new Point(7, 2), false));
+                            Console.WriteLine("black queenside jup");
+                        }
+                    }
+                }
+            }
+
+            return moves;
         }
     }
 }
