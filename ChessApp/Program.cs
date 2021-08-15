@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ChessApp.Bots;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 
@@ -71,6 +72,81 @@ namespace ChessApp
         public bool Castles { get; }
         public bool CastlesKingSide { get; }
 
+        private string pointToSquare(Point point)
+        {
+            return "" + (char)(point.Y + 97) + (point.X + 1);
+            
+        }
+        public string RawAlgebraic(bool startSquare) { //bool tells if we need to specify the startsquare
+            //this function does not add symbols like + or # as it doesn't know this.
+            string algebraic = "";
+            if (Castles)
+            {
+                if (CastlesKingSide)
+                {
+                    return "0-0";
+                }
+                return "0-0-0";
+            }
+
+            switch (Piece)
+            {
+                case Piece.PAWN:
+                    if (Capture)
+                    {
+                        //add column of origin (ex: fxe4)
+                        algebraic = (char)(From.Y + 97) + "x";
+                    }
+                    algebraic += pointToSquare(To);
+                    if (Promotion != Piece.NONE)
+                    {
+                        algebraic += "=";
+                        switch (Promotion)
+                        {
+                            case Piece.KNIGTH:
+                                algebraic += "N";
+                                break;
+                            case Piece.BISHOP:
+                                algebraic += "B";
+                                break;
+                            case Piece.ROOK:
+                                algebraic += "R";
+                                break;
+                            case Piece.QUEEN:
+                                algebraic += "Q";
+                                break;
+                        }
+                    }
+                    return algebraic;
+                case Piece.KNIGTH:
+                    algebraic = "N";
+                    break;
+                case Piece.BISHOP:
+                    algebraic = "B";
+                    break;
+                case Piece.ROOK:
+                    algebraic = "R";
+                    break;
+                case Piece.QUEEN:
+                    algebraic = "Q";
+                    break;
+                case Piece.KING:
+                    algebraic = "K";
+                    break;
+
+            }
+            if (startSquare)
+            {
+                algebraic += pointToSquare(From);
+            }
+            if (Capture)
+            {
+                algebraic += "x";
+            }
+            algebraic += pointToSquare(To);
+            return algebraic;
+        }
+
         public override string ToString() => (Piece + " from: " + (char)(From.Y + 97) + (From.X + 1) + " to: " + (char)(To.Y + 97) + (To.X + 1) +(Promotion == Piece.NONE ? "": " Promotion: " + Promotion));
 
     }
@@ -80,17 +156,9 @@ namespace ChessApp
         static void Main(string[] args)
         {
             Program P = new Program();
-            P.chessBoard = new ChessBoard();
-            P.chessBoard.setupByFEN("r3k2r/pppppppp/8/8/8/8/PPPPPPPP/R3K2R w KQkq - 0 1");
-            P.chessBoard.printAscii();
+            Game game = new Game();
 
-
-            List<Move> moves = P.chessBoard.GetLegalMoves();
-
-            foreach ( Move i in moves)
-            {
-                Console.WriteLine(i);
-            }
+            game.playGameBetweenBots(new RandomMoveBot(), new RandomMoveBot());
         }
     }
 }

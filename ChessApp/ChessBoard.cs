@@ -26,6 +26,9 @@ namespace ChessApp
         private bool inCheckMate;
         private bool inStaleMate;
         private bool gameOver;
+        private string pgn = "1.";
+        private int piecesRemaining; //if this drops to 3 then we see if there is enough material remaining
+        
 
 
         public ChessBoard()
@@ -168,6 +171,7 @@ namespace ChessApp
 
         public void setupByFEN(string FEN)
         {
+            piecesRemaining = 0;
             //TODO: reset board
             string[] _fen = FEN.Split(' ');
             string[] _pieces = _fen[0].Split('/');
@@ -186,6 +190,7 @@ namespace ChessApp
                     }
                     else
                     {
+                        piecesRemaining++;
                         switch (c)
                         {
                             case 'r':
@@ -286,12 +291,7 @@ namespace ChessApp
         }
         public void setup()
         {
-            //nullable parameters are weirdly not allowed
-            if (null != null)
-            {
-
-            }
-            else {
+            piecesRemaining = 24;
                 //standard board setup
                 board[0, 0].setPiece(Piece.ROOK, Color.WHITE);
                 board[0, 7].setPiece(Piece.ROOK, Color.WHITE);
@@ -320,7 +320,7 @@ namespace ChessApp
                 board[7, 5].setPiece(Piece.BISHOP, Color.BLACK);
                 board[7, 3].setPiece(Piece.QUEEN, Color.BLACK);
                 board[7, 4].setPiece(Piece.KING, Color.BLACK);
-            }
+            
             
 
         }
@@ -1813,9 +1813,12 @@ namespace ChessApp
         public bool makeLegalMove(Move move)
         {
             GetLegalMoves();
-            Console.WriteLine(move);
+            Console.WriteLine(move.RawAlgebraic(false));
             if (_legalMoves.Contains(move))
             {
+                //update castling rigths before the actual move. at this point we still have the move color
+                updateCastlingRigths(move, toMove);
+
                 Color oppositeColor = Color.WHITE;
                 if (toMove == Color.WHITE)
                 {
@@ -1850,20 +1853,50 @@ namespace ChessApp
                 //set board variables
                 toMove = oppositeColor;
                 enPassantColumn = null;
-                
+                pgn += getAlgebraicNotationOfMove(move) + " ";
+
                 if (toMove == Color.WHITE)
                 {
                     moveNumber++;
+                    pgn += moveNumber + ". ";
                 }
 
                 if(move.Piece == Piece.PAWN | move.Capture ) //TODO: castles or losing of castling rigths needs to change this too
                 {
                     halfMoves = 0;
                 }
+                if (move.Capture)
+                {
+                    piecesRemaining--;
+                    if(piecesRemaining == 3)
+                    {
+                        for (int i = 7; i > -1; i--)
+                        {
+
+                            for (int j = 0; j < 8; j++)
+                            {
+                                if(board[i, j].GetPiece() == Piece.BISHOP |board[i, j].GetPiece() == Piece.KNIGTH)
+                                {
+                                    gameOver = true;
+                                    Console.WriteLine("insufficient material");
+                                }
+                                
+                            }
+                            
+                        }
+
+                    }
+                    if (piecesRemaining == 2)
+                    {
+                        gameOver = true;
+                    }
+                }
                 else
                 {
                     halfMoves++;
                 }
+
+                
                 _legalMoves = null;
                 getBoardstate();
                 return true;
@@ -2034,6 +2067,92 @@ namespace ChessApp
             }
 
             return moves;
+        }
+
+        public bool updateCastlingRigths(Move move, Color color ) //color who just did a move
+        {
+            //returns true if the value has been updated, important for the 50 move rule
+            if (!wCanCastleKing && !wCanCastleQueen && !bCanCastleKing && !bCanCastleQueen)
+            {
+                //values can't be updated
+                return false;
+            }
+            //check all the rooksquares, if something on it moves to or from then the value must try to be updated
+            Point rook1 = new Point(0, 0);
+            Point rook2 = new Point(0, 7);
+            Point rook3 = new Point(7, 0);
+            Point rook4 = new Point(7, 7);
+
+            //booleans to check if they were updated
+
+            bool wking = wCanCastleKing;
+            bool wqueen = wCanCastleQueen;
+            bool bking= bCanCastleKing;
+            bool bqueen = bCanCastleQueen;
+
+            if (move.From.Equals(rook1) | move.To.Equals(rook1))
+            {
+                wking = false;
+            }
+            if (move.From.Equals(rook2) | move.To.Equals(rook2))
+            {
+                wqueen = false;
+            }
+            if (move.From.Equals(rook3) | move.To.Equals(rook3))
+            {
+                bking = false;
+            }
+            if (move.From.Equals(rook4) | move.To.Equals(rook4))
+            {
+                bqueen = false;
+            }
+
+            if(move.Piece == Piece.KING && color == Color.WHITE)
+            {
+                wking = false;
+                wqueen = false;
+            }
+            if (move.Piece == Piece.KING && color == Color.BLACK)
+            {
+                bking = false;
+                bqueen = false;
+            }
+
+            if(!(wking == wCanCastleKing && wqueen == wCanCastleQueen && bking == bCanCastleKing && bqueen == bCanCastleQueen))
+            {
+                 wCanCastleKing = wking;
+                wCanCastleQueen= wqueen;
+                 bCanCastleKing= bking;
+                bCanCastleQueen = bqueen;
+                return true;
+            }
+            return false; //nothing needs to be updated
+        }
+
+        public string getAlgebraicNotationOfMove(Move move)
+        {
+            //get raw notation and factor in duplicates
+            _legalMoves = GetLegalMoves();
+             
+            foreach(Move legalMove in _legalMoves)
+            {
+                if(legalMove.Piece == move.Piece && legalMove.To == move.To && legalMove.From != move.From)
+                {
+                    return move.RawAlgebraic(true);
+                }
+            }
+            return move.RawAlgebraic(false); ;
+        }
+
+        public string getPGN()
+        {
+            return pgn;
+        }
+
+        public Square[,] GetSquares()
+        {
+            //for bots, idk if this is good to do tho
+            return board;
         }
     }
 }
