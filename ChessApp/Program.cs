@@ -21,6 +21,15 @@ namespace ChessApp
         
     }
 
+    public enum BoardState
+    {
+        PLAYING,
+        DRAW,
+        WIN, // win for white
+        LOSS // loss for white
+
+    }
+
     public struct Move
     {
         public Move(Point from, Point to, Piece piece, bool capture, bool enPassant)
@@ -158,7 +167,7 @@ namespace ChessApp
             Program P = new Program();
             Game game = new Game();
 
-            game.playGameBetweenBots(new RandomMoveBot(), new RandomMoveBot());
+            game.playGameBetweenBots( new RandomMoveBot(),new MaterialisticBotV1());
         }
     }
 }

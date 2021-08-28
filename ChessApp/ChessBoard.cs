@@ -1779,7 +1779,7 @@ namespace ChessApp
             board[toRow, toCol].setPiece(piece, color);
         }
 
-        public string getBoardstate()
+        public BoardState getBoardstate()
         {
             inCheck = isInCeck(toMove);
             _legalMoves = GetLegalMoves();
@@ -1787,11 +1787,12 @@ namespace ChessApp
             {
                 if (halfMoves > 99) {
                     gameOver = true;
-                    return "50 move rule";
+                    //50 move rule
+                    return BoardState.DRAW;
                     
                 }
 
-                return "Playing";
+                return BoardState.PLAYING;
                 
             }
             else
@@ -1800,12 +1801,20 @@ namespace ChessApp
                 if (inCheck)
                 {
                     inCheckMate = true;
-                    return "checkmate";
+                    if(toMove == Color.WHITE)
+                    {
+                        return BoardState.LOSS;
+                    }
+                    else
+                    {
+                        return BoardState.WIN;
+                    }
+                    
                 }
                 else
                 {
                     inStaleMate = true;
-                    return "stalemate";
+                    return BoardState.DRAW;
                 }
             }
         }
@@ -1813,7 +1822,6 @@ namespace ChessApp
         public bool makeLegalMove(Move move)
         {
             GetLegalMoves();
-            Console.WriteLine(move.RawAlgebraic(false));
             if (_legalMoves.Contains(move))
             {
                 //update castling rigths before the actual move. at this point we still have the move color
@@ -1824,7 +1832,6 @@ namespace ChessApp
                 {
                     oppositeColor = Color.BLACK;
                 }
-                Console.WriteLine("okidoki");
                 if (move.EnPassant)
                 {
                     doEnPassant(move);
@@ -2092,19 +2099,19 @@ namespace ChessApp
 
             if (move.From.Equals(rook1) | move.To.Equals(rook1))
             {
-                wking = false;
+                wqueen = false;
             }
             if (move.From.Equals(rook2) | move.To.Equals(rook2))
             {
-                wqueen = false;
+                wking = false;
             }
             if (move.From.Equals(rook3) | move.To.Equals(rook3))
             {
-                bking = false;
+                bqueen = false;
             }
             if (move.From.Equals(rook4) | move.To.Equals(rook4))
             {
-                bqueen = false;
+                bking = false;
             }
 
             if(move.Piece == Piece.KING && color == Color.WHITE)
@@ -2152,7 +2159,14 @@ namespace ChessApp
         public Square[,] GetSquares()
         {
             //for bots, idk if this is good to do tho
+            //they could technically manipulate the board while calculating
+            //in the future maybe give a copy of the board
+
             return board;
+        }
+        public Color getToMove()
+        {
+            return toMove;
         }
     }
 }
