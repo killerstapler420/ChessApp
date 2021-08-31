@@ -1994,7 +1994,6 @@ namespace ChessApp
                         {
                             //can castle
                             moves.Add(new Move(new Point(0, 4), new Point(0,6), true));
-                            Console.WriteLine("kingside jup");
                         }
                     }
                 }
@@ -2015,7 +2014,6 @@ namespace ChessApp
                         {
                             //can castle
                             moves.Add(new Move(new Point(0, 4), new Point(0, 2), false));
-                            Console.WriteLine("queenside jup");
                         }
                     }
                 }
@@ -2045,7 +2043,7 @@ namespace ChessApp
                         if (board[7, 5].GetPiece() == Piece.NONE && board[7, 6].GetPiece() == Piece.NONE)
                         {
                             //can castle
-                            Console.WriteLine("black kingside jup");
+                            //Console.WriteLine("black kingside jup");
                             moves.Add(new Move(new Point(7, 4), new Point(7,6), true));
                         }
                     }
@@ -2067,7 +2065,7 @@ namespace ChessApp
                         {
                             //can castle
                             moves.Add(new Move(new Point(7, 4), new Point(7, 2), false));
-                            Console.WriteLine("black queenside jup");
+                            //Console.WriteLine("black queenside jup");
                         }
                     }
                 }

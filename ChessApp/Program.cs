@@ -167,7 +167,25 @@ namespace ChessApp
             Program P = new Program();
             Game game = new Game();
 
-            game.playGameBetweenBots( new RandomMoveBot(),new MaterialisticBotV1());
+            //game.playGameBetweenBots(new MaterialisticBotV2(3), new RandomMoveBot());
+            P.chessBoard = new ChessBoard();
+            P.chessBoard.setupByFEN("r1bqk1nr/pppp1ppp/2n5/2b1p3/1PB1P3/5N2/P1PP1PPP/RNBQK2R b KQkq - 0 4");
+
+            IBot bot = new MaterialisticBotV2(3);
+            IBot bot2 = new V2ThreadingBot(3);
+
+            Console.WriteLine(Environment.ProcessorCount);
+            var watch = System.Diagnostics.Stopwatch.StartNew();
+            Move move = bot.getBestMove(P.chessBoard);
+            watch.Stop();
+            Console.WriteLine(move);
+            Console.WriteLine(watch.ElapsedMilliseconds);
+
+            var watch2 = System.Diagnostics.Stopwatch.StartNew();
+            Move move2 = bot2.getBestMove(P.chessBoard);
+            watch.Stop();
+            Console.WriteLine(move2);
+            Console.WriteLine(watch2.ElapsedMilliseconds);
         }
     }
 }

@@ -86,6 +86,7 @@ namespace ChessApp.Bots
 
         public double getEvaluation(ChessBoard chessBoard)
         {
+            //eval is not on point because it doesn't factor in chackmates
             double eval =0;
             Square[,] board= chessBoard.GetSquares();
             for (int i = 7; i > -1; i--)
