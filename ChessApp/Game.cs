@@ -51,7 +51,7 @@ namespace ChessApp
         public void playGameBetweenBots(IBot white, IBot black)
         {
             chessBoard = new ChessBoard();
-            chessBoard.setupByFEN("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1");
+            chessBoard.setupByFEN("3b4/1R3p2/1r2k1pp/4Np2/3P4/7P/5PP1/6K1 w - - 0 35");
             gameOver = false;
             chessBoard.printAscii();
             while (!gameOver)

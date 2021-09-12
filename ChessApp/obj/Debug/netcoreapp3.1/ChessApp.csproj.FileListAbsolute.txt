@@ -11,3 +11,16 @@ C:\Users\bramv\OneDrive\Bureaublad\projects\ChessApp\ChessApp\obj\Debug\netcorea
 C:\Users\bramv\OneDrive\Bureaublad\projects\ChessApp\ChessApp\obj\Debug\netcoreapp3.1\ChessApp.dll
 C:\Users\bramv\OneDrive\Bureaublad\projects\ChessApp\ChessApp\obj\Debug\netcoreapp3.1\ChessApp.pdb
 C:\Users\bramv\OneDrive\Bureaublad\projects\ChessApp\ChessApp\obj\Debug\netcoreapp3.1\ChessApp.genruntimeconfig.cache
+C:\buroblat\projects\ChessApp\ChessApp\bin\Debug\netcoreapp3.1\ChessApp.exe
+C:\buroblat\projects\ChessApp\ChessApp\bin\Debug\netcoreapp3.1\ChessApp.deps.json
+C:\buroblat\projects\ChessApp\ChessApp\bin\Debug\netcoreapp3.1\ChessApp.runtimeconfig.json
+C:\buroblat\projects\ChessApp\ChessApp\bin\Debug\netcoreapp3.1\ChessApp.runtimeconfig.dev.json
+C:\buroblat\projects\ChessApp\ChessApp\bin\Debug\netcoreapp3.1\ChessApp.dll
+C:\buroblat\projects\ChessApp\ChessApp\bin\Debug\netcoreapp3.1\ChessApp.pdb
+C:\buroblat\projects\ChessApp\ChessApp\obj\Debug\netcoreapp3.1\ChessApp.csproj.AssemblyReference.cache
+C:\buroblat\projects\ChessApp\ChessApp\obj\Debug\netcoreapp3.1\ChessApp.AssemblyInfoInputs.cache
+C:\buroblat\projects\ChessApp\ChessApp\obj\Debug\netcoreapp3.1\ChessApp.AssemblyInfo.cs
+C:\buroblat\projects\ChessApp\ChessApp\obj\Debug\netcoreapp3.1\ChessApp.csproj.CoreCompileInputs.cache
+C:\buroblat\projects\ChessApp\ChessApp\obj\Debug\netcoreapp3.1\ChessApp.dll
+C:\buroblat\projects\ChessApp\ChessApp\obj\Debug\netcoreapp3.1\ChessApp.pdb
+C:\buroblat\projects\ChessApp\ChessApp\obj\Debug\netcoreapp3.1\ChessApp.genruntimeconfig.cache

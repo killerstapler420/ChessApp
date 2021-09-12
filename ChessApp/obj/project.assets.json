@@ -13,11 +13,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\bramv\\OneDrive\\Bureaublad\\projects\\ChessApp\\ChessApp\\ChessApp.csproj",
+      "projectUniqueName": "C:\\buroblat\\projects\\ChessApp\\ChessApp\\ChessApp.csproj",
       "projectName": "ChessApp",
-      "projectPath": "C:\\Users\\bramv\\OneDrive\\Bureaublad\\projects\\ChessApp\\ChessApp\\ChessApp.csproj",
+      "projectPath": "C:\\buroblat\\projects\\ChessApp\\ChessApp\\ChessApp.csproj",
       "packagesPath": "C:\\Users\\bramv\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\bramv\\OneDrive\\Bureaublad\\projects\\ChessApp\\ChessApp\\obj\\",
+      "outputPath": "C:\\buroblat\\projects\\ChessApp\\ChessApp\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\bramv\\AppData\\Roaming\\NuGet\\NuGet.Config",
